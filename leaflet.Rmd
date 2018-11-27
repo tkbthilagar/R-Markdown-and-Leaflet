@@ -1,0 +1,24 @@
+---
+title: "Developing Data Products"
+subtitle: "R Markdown and Leaflet Assignment"
+author: "Brian Gulbis"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(leaflet)
+
+df <- data.frame(lat = runif(5, min = 29.7, max = 29.8),
+                 lng = runif(5, min = -95.4, max = -95.3))
+
+df %>%
+    leaflet() %>%
+    addTiles() %>%
+    addMarkers()
+```
+
