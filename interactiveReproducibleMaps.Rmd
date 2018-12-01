@@ -1,0 +1,77 @@
+knitr::opts_chunk$set(echo = TRUE)
+
+rm(list = ls()) # clear all environment variables
+
+suppressPackageStartupMessages(library(leaflet))
+
+suppressPackageStartupMessages(library(rgdal))
+
+resource <- "https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/master/countries.geojson"
+
+download.file(url = resource, destfile = "countries.geojson")
+
+countries <- readOGR("countries.geojson", "OGRGeoJSON")
+
+map <- leaflet(countries) %>% addTiles(group = "Layers:")
+
+gdpColors <- colorQuantile("Greens", countries$gdp_md_est, n = 5)
+
+popColors <- colorQuantile("Blues", countries$pop_est, n = 5)
+
+map %>% addPolygons(
+            
+stroke = FALSE,
+          
+smoothFactor = 0.2,
+            
+fillOpacity = 1,
+            
+color =  ~ gdpColors(gdp_md_est),
+            
+group = "GDP"
+  
+  ) %>% addPolygons(
+  
+  stroke = FALSE,
+  
+  smoothFactor = 0.2,
+  
+  fillOpacity = 1,
+  
+  color = ~ popColors(pop_est),
+  
+  group = "Population"
+  
+  ) %>% addLegend(
+  
+  "bottomright",
+  
+  pal = gdpColors,
+  
+  values = ~ gdp_md_est,
+  
+  title = "GDP",
+          
+opacity = 1
+
+) %>% addLegend(
+
+"bottomright",
+
+pal = popColors,
+
+values = ~ pop_est,
+
+title = "Population",
+
+opacity = 1
+
+) %>% addLayersControl(
+
+baseGroups = c("Layers:"),
+
+overlayGroups = c("GDP", "Population"),
+
+options = layersControlOptions(collapsed = FALSE)
+
+)
